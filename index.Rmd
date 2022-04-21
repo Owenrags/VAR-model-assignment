@@ -1,0 +1,115 @@
+---
+title: 'VAR/VECM Project'
+author: "Owen Ragsdale"
+date: "`r format(Sys.Date(),'%B %d, %Y')`"
+output: 
+  html_document:
+    df_print: paged
+    code_folding: "hide"
+    toc: yes
+    fig_caption: yes
+    theme: cerulean
+    toc_float: no
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+rm(list = ls())
+graphics.off()
+
+```
+```{r packages, include=FALSE}
+require(fpp3)
+require(tidyverse)
+require(dplyr)
+require(tidyquant)
+require(lubridate)
+require(timetk)
+require(vars)
+require(lmtest)
+require(kableExtra)
+require(lmtest)
+```
+
+```{r data, include=FALSE}
+varList <- c("PBARLUSDM", "UNRATE")
+X <- tq_get(varList, get = "economic.data", from = "1990-01-01") %>%
+  mutate(Month = yearmonth(date)) %>% dplyr::select(-date) %>%
+  as_tsibble(index = Month, key = symbol)
+New_x <- X %>%
+  pivot_wider(names_from = symbol, values_from = price) %>%
+  as_tsibble()
+
+```
+
+```{r plot}
+X %>% ggplot(aes(x = Month, y = price)) +
+  geom_line() +
+  facet_grid(vars(symbol), scales = "free_y")
+```
+
+```{r unitroot}
+X %>% 
+  features(price, unitroot_ndiffs) %>%
+  kable(format = "html", table.attr = "style='width:30%;' ") %>%
+  kableExtra::kable_styling()
+
+```
+
+```{r kpss}
+X %>% filter(symbol == "PBARLUSDM") %>%
+  features(log(price), unitroot_kpss) %>%
+  kable(format = "html", table.attr = "style='width:30%;' ") %>%
+  kableExtra::kable_styling()
+```
+
+```{r kpss2.0}
+X %>% filter(symbol == "UNRATE") %>%
+  features(log(price), unitroot_kpss) %>%
+  kable(format = "html", table.attr = "style='width:30%;' ") %>%
+  kableExtra::kable_styling()
+```
+
+
+```{r }
+Zdrink <- New_x %>% 
+ mutate(gPBARLUSDM = 100 * difference(log(PBARLUSDM))) %>%
+    dplyr::select(gPBARLUSDM, UNRATE) %>%
+    tidyr::drop_na()
+Zdrink <- as.ts(Zdrink, start = c(1990,2), frequency = 12)
+
+```
+
+```{r}
+zh <- Zdrink[,c(2,1)]
+tmp <- VARselect(zh,lag.max = 12, type="const")
+tmp
+```
+
+```{r}
+p <- tmp$selection[2]
+
+```
+
+```{r}
+var.Zdrink <- VAR(zh, p=p, type = "const")
+summary(var.Zdrink)
+
+```
+
+```{r}
+
+grangertest(gPBARLUSDM ~ UNRATE, order=p, data = zh)
+
+```
+
+```{r}
+
+grangertest(UNRATE ~ gPBARLUSDM, order=p, data = zh)
+
+```
+
+```{r}
+
+plot(irf(var.Zdrink, n.ahead = 6, boot = TRUE))
+
+```
