@@ -1,5 +1,5 @@
 ---
-title: 'VAR/VECM Project'
+title: 'Determining Causality between Unemployment and Retail Sales of Beer, Wine and Liquor'
 author: "Owen Ragsdale"
 date: "`r format(Sys.Date(),'%B %d, %Y')`"
 output: 
@@ -48,7 +48,7 @@ This white paper seeks insight into the causality and correlation between two va
 
 ### _Introduction_
 
-In the world of economics we classify goods in a variety of ways based on specific parameters. For example, economist would called a good that experiences an increase in demand based on an increase in consumers income, a normal good. A good that experiences less demand when income rises is considered an inferior good. The objective of this paper is to use VAR models to determine if unemployment, which is correlated with income, causes an change in retail sales: alcoholic beverages. We know through economic theory that in times of recession that individuals purchase more non-durable goods, items such as food, condiments, fuel, and other short life-spanned products. Another area of  economic theory is elasticity, an economic concept that measures the change in quantity demanded over the change in price of the good. Alcohol is assumed to be an elastic good, meaning that consumers are sensitive to changes in price, this is different from a product such as cigarettes, where the product is highly addictive and therefore, consumers care far less about price. 
+In the world of economics we classify goods in a variety of ways based on specific parameters. For example, economist would called a good that experiences an increase in demand based on an increase in consumers income, a normal good. A good that experiences less demand when income rises is considered an inferior good. The objective of this paper is to use VAR models to determine if unemployment, which is correlated with income, causes an change in retail sales of alcoholic beverages. We know through economic theory that in times of recession that individuals purchase more non-durable goods, items such as food, condiments, fuel, and other short life-spanned products. Another area of  economic theory is elasticity, an economic concept that measures the change in quantity demanded over the change in price of the good. Alcohol is assumed to be an elastic good, meaning that consumers are sensitive to changes in price, this is different from a product such as cigarettes, where the product is highly addictive and therefore, consumers care far less about price. 
 
 To see the entire project and code please click the link below:
 
@@ -129,6 +129,8 @@ summary(var.Zdrink)
 
 ### _Results of the VAR Model_
 
+First and foremost, addressing the decision behind choosing a VAR model over other models. The variable unemployment is stationary, ruling out the use of VECM. However, the ordering of the variables mattered in terms of testing our expectation, being the effect in which unemployment had on Retail Sales. 
+
 The two tables below report the values output by what is known as the a Granger causality test. The statistic we are interested in is the value below the column labeled Pr(>F). In this case, lower values display both the variables, _unemployment_ & _retail sales_ are significant; however, the relationship shows a relationship far different than our expected outcome. 
 
 This first table suggest that our initial expectation of unemployment having an effect retail sales: alcoholic beverages is in fact accurate. This is substantiated by the low p-value of 0.0003306. 
@@ -149,7 +151,7 @@ grangertest(UNRATE ~ gMRTSSM4453USS, order=p, data = zh)
 
 Taking a look at the impulse response function, in the first plot we see that when we ping unemployment rate we see a jump in retail sales of alcoholic beverages. This is consistent with our findings of the Granger causality test. Something to note is that it takes unemployment a much longer time to return to it's steady state, this is to be expected as unemployment doesn't typically experience shocks.
 
-In the second plot we ping retail sales of alcoholic beverages and we see a slight jump in unemployment, which again is consistent with our findings from the Granger test. Using the plot to discuss significance is miss leading because we are unable to determine the level of magnitude in regards to signifcance.
+In the second plot we ping retail sales of alcoholic beverages and we see a slight jump in unemployment, which again is consistent with our findings from the Granger test. Using the plot to discuss significance is miss leading because we are unable to determine the level of magnitude in regards to significance.
 
 
 ```{r}
