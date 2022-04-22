@@ -131,11 +131,15 @@ summary(var.Zdrink)
 
 The two tables below report the values output by what is known as the a Granger causality test. The statistic we are interested in is the value below the column labeled Pr(>F). In this case, lower values display both the variables, _unemployment_ & _retail sales_ are significant; however, the relationship shows a relationship far different than our expected outcome. 
 
+This first table suggest that our initial expectation of unemployment having an effect retail sales: alcoholic beverages is in fact accurate. This is substantiated by the low p-value of 0.0003306. 
+
 ```{r}
 
 grangertest(gMRTSSM4453USS ~ UNRATE, order=p, data = zh)
 
 ```
+
+This second table is the more interesting of the two. This table suggest that retail sales: alcoholic beverages, has an highly significant impact on unemployment. Although this is consistent with economic theory it was not the first primary expectation of outcome in this analysis.  
 
 ```{r}
 
@@ -143,12 +147,19 @@ grangertest(UNRATE ~ gMRTSSM4453USS, order=p, data = zh)
 
 ```
 
+Taking a look at the impulse response function, in the first plot we see that when we ping unemployment rate we see a jump in retail sales of alcoholic beverages. This is consistent with our findings of the Granger causality test. Something to note is that it takes unemployment a much longer time to return to it's steady state, this is to be expected as unemployment doesn't typically experience shocks.
+
+In the second plot we ping retail sales of alcoholic beverages and we see a slight jump in unemployment, which again is consistent with our findings from the Granger test. Using the plot to discuss significance is miss leading because we are unable to determine the level of magnitude in regards to signifcance.
+
 
 ```{r}
 
 plot(irf(var.Zdrink, n.ahead = 6, boot = TRUE))
 
 ```
+
+Lastly, diving into the results of the forecast error variance decomposition. Both plots are fairly straight forward, most of the variance in unemployment is explained by unemployment and the same is true with retail sales of alcoholic beverages (gMRTSSM4453USS) 
+
 
 ```{r}
 
@@ -159,4 +170,4 @@ plot(fevd(var.Zdrink, n.ahead = 12))
 
 ### _Conclusion_
 
-Taking a step back from the analysis conducted above we can conclude the VAR model did in fact confirm the expected outcome that employment does cause retail sales: alcoholic beverages. However, it also gave us a more convincing argument that retail sales of alcoholic beverages has a larger impact on unemployment. It is my belief that this finding suggest that retail sales as a whole, not just alcoholic beverages, have an impact on unemployment. This would be consistent with economic theory that would suggest that consumers stop purchasing as many goods when they become unemployed, due to lack of income. In order to confirm this we would need to gather new variables and more data to test this expectation.  
+Taking a step back from the analysis conducted above we can conclude the VAR model did in fact confirm the expected outcome that employment does cause retail sales: alcoholic beverages. However, it also gave us a more convincing argument that retail sales of alcoholic beverages has a larger impact on unemployment than previously expected. It is my belief that this finding suggest that retail sales as a whole, not just alcoholic beverages, have an impact on unemployment. This would be consistent with economic theory that would suggest that consumers stop purchasing as many goods when they become unemployed, due to lack of income. In order to confirm this we would need to gather new variables and more data to test this expectation.  
