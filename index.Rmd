@@ -47,18 +47,27 @@ This white paper seeks insight into the causality and correlation between two va
 
 ### _Introduction_
 
+In the world of economics we classify goods in variety of ways based on specific parameters. For example economist would called a good that experiences an increase in demand based on an increase in consumers income, a normal good. A good that experiences less demand when income rises is considered an inferior good. The objective of this paper is to use VAR models to determine if unemployment, which is correlated with income, causes an change in retail sales: alcoholic beverages. We know through economic theory that in times of recession that individuals purchase more non-durable goods, items such as food, condiments, fuel, and other short life-spanned products. Another area of  economic theory is elasticity, an economic concept that measures the change in quantity demanded over the change in price of the good. Alcohol is assumed to be an elastic good, meaning that consumers are sensitive to changes in price, this is different from a product such as cigarettes, where the product is highly addictive and therefore, consumers care far less about price. 
 
-
-To see the entire project and code please click the link below.
+To see the entire project and code please click the link below:
 
 [link](https://owenrags.github.io/)
 
-### _Data selection & manipulation_
+### _Data manipulation_
+
+As mentioned in the previous paragraph the two variables that will be used in the VAR model are:
+
+_Unemployment_ - _UNRATE_
+
+_Retail Sales: Beer, Wine, and Liquor Stores_ - _MRTSSM4453USS_
+
+Some important points regarding the data, are the units the data is measured in. _Unemployment rate_ is measured in percent, reported monthly, and is seasonally adjusted. _Retail Sales: Beer, wine, and Liquor Stores_ is measured in millions of dollars, reported monthly, and also seasonally adjusted. The tables below is displaying what is know as a unit root test. As we can see the _Retail Sales_ variable has 1 unit root, which requires us to run a process know as differencing. For the sake of simplicity, differencing is the process in which the data is made stationary, meaning that over time the properties of the data such as mean and variance stay constant over time. 
 
 ```{r plot}
 X %>% ggplot(aes(x = Month, y = price)) +
   geom_line() +
-  facet_grid(vars(symbol), scales = "free_y")
+  facet_wrap(vars(symbol), scales = "free_y", ncol=1) +
+  labs(y = "")
 ```
 
 ```{r unitroot}
@@ -104,7 +113,7 @@ p <- tmp$selection[2]
 
 ```
 
-```{r}
+```{r, include=FALSE}
 var.Zdrink <- VAR(zh, p=p, type = "const")
 summary(var.Zdrink)
 
