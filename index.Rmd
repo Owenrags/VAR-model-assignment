@@ -28,6 +28,7 @@ require(vars)
 require(lmtest)
 require(kableExtra)
 require(lmtest)
+require(tsDyn)
 ```
 
 ```{r data, include=FALSE}
@@ -61,7 +62,10 @@ _Unemployment_ - _UNRATE_
 
 _Retail Sales: Beer, Wine, and Liquor Stores_ - _MRTSSM4453USS_
 
-Some important points regarding the data, are the units the data is measured in. _Unemployment rate_ is measured in percent, reported monthly, and is seasonally adjusted. _Retail Sales: Beer, wine, and Liquor Stores_ is measured in millions of dollars, reported monthly, and also seasonally adjusted. The tables below is displaying what is know as a unit root test. As we can see the _Retail Sales_ variable has 1 unit root, which requires us to run a process know as differencing. For the sake of simplicity, differencing is the process in which the data is made stationary, meaning that over time the properties of the data such as mean and variance stay constant over time. 
+Some important points regarding the data, are the units the data is measured in. _Unemployment rate_ is measured in percent, reported monthly, and is seasonally adjusted. _Retail Sales: Beer, wine, and Liquor Stores_ is measured in millions of dollars, reported monthly, and also seasonally adjusted. 
+
+Looking at the two plots of the variables gives us some insight into whether or not our variables appear to be coupled. From just a quick glance we can see that _retail sales_ appear to be steadily increasing since 1992, but we do see a little bump in 2020 when COVID-19 begins. This may provide some evidence that unemployment does cause an increase in _retail sales: alcoholic beverages_.
+
 
 ```{r plot}
 X %>% ggplot(aes(x = Month, y = price)) +
@@ -69,6 +73,8 @@ X %>% ggplot(aes(x = Month, y = price)) +
   facet_wrap(vars(symbol), scales = "free_y", ncol=1) +
   labs(y = "")
 ```
+
+The table below is displaying what is know as a unit root test. As we can see the _Retail Sales_ variable has 1 unit root, which requires us to run a process know as differencing. For the sake of simplicity, differencing is the process in which the data is made stationary, meaning that over time the properties of the data such as mean and variance stay constant over time. 
 
 ```{r unitroot}
 X %>% 
@@ -78,14 +84,14 @@ X %>%
 
 ```
 
-```{r kpss}
+```{r kpss, include=FALSE}
 X %>% filter(symbol == "MRTSSM4453USS") %>%
   features(log(price), unitroot_kpss) %>%
   kable(format = "html", table.attr = "style='width:30%;' ") %>%
   kableExtra::kable_styling()
 ```
 
-```{r kpss2.0}
+```{r kpss2.0, include=FALSE}
 X %>% filter(symbol == "UNRATE") %>%
   features(log(price), unitroot_kpss) %>%
   kable(format = "html", table.attr = "style='width:30%;' ") %>%
@@ -93,7 +99,7 @@ X %>% filter(symbol == "UNRATE") %>%
 ```
 
 
-```{r }
+```{r, include=FALSE}
 Zdrink <- New_x %>% 
  mutate(gMRTSSM4453USS = 100 * difference(difference(log(MRTSSM4453USS)))) %>%
     dplyr::select(gMRTSSM4453USS, UNRATE) %>%
@@ -102,13 +108,13 @@ Zdrink <- as.ts(Zdrink, start = c(1992,2), frequency = 12)
 
 ```
 
-```{r}
+```{r, include=FALSE}
 zh <- Zdrink[,c(2,1)]
 tmp <- VARselect(zh,lag.max = 9, type="const")
 tmp
 ```
 
-```{r}
+```{r, include=FALSE}
 p <- tmp$selection[2]
 
 ```
@@ -118,6 +124,10 @@ var.Zdrink <- VAR(zh, p=p, type = "const")
 summary(var.Zdrink)
 
 ```
+
+### _Results of the VAR Model_
+
+The two tables below 
 
 ```{r}
 
@@ -131,12 +141,16 @@ grangertest(UNRATE ~ gMRTSSM4453USS, order=p, data = zh)
 
 ```
 
-### _Results of the VAR Model_
-
 
 ```{r}
 
 plot(irf(var.Zdrink, n.ahead = 6, boot = TRUE))
+
+```
+
+```{r}
+
+fevd(var.Zdrink, n.ahead = 12)
 
 ```
 
