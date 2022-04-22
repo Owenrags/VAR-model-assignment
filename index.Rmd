@@ -44,7 +44,7 @@ New_x <- X %>%
 
 ### _Executive Summary_
 
-This white paper seeks insight into the causality and correlation between two variables, in this case the unemployment rate and retail sales: beer, wine, and liquor sales from 1992 until February of 2022. Prior to the analysis the expected outcome was that as unemployment increased, we would see an increase in retail sales of alcoholic beverages. After adjusting the data and using a Vector Autoregression Model (VAR) we found that their is no significant causality between the two variables. 
+This white paper seeks insight into the causality and correlation between two variables, in this case the unemployment rate and retail sales: beer, wine, and liquor sales from 1992 until February of 2022. Prior to the analysis the expected outcome was that as unemployment increased, we would see an increase in retail sales of alcoholic beverages. After adjusting the data and using a Vector Autoregression Model (VAR) we found that their is in fact two way causality between the two variables, even if the effect is small. 
 
 ### _Introduction_
 
