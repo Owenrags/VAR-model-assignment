@@ -125,9 +125,11 @@ summary(var.Zdrink)
 
 ```
 
+
+
 ### _Results of the VAR Model_
 
-The two tables below 
+The two tables below report the values output by what is known as the a Granger causality test. The statistic we are interested in is the value below the column labeled Pr(>F). In this case, lower values display both the variables, _unemployment_ & _retail sales_ are significant; however, the relationship shows a relationship far different than our expected outcome. 
 
 ```{r}
 
@@ -150,10 +152,11 @@ plot(irf(var.Zdrink, n.ahead = 6, boot = TRUE))
 
 ```{r}
 
-fevd(var.Zdrink, n.ahead = 12)
+plot(fevd(var.Zdrink, n.ahead = 12))
 
 ```
 
 
 ### _Conclusion_
 
+Taking a step back from the analysis conducted above we can conclude the VAR model did in fact confirm the expected outcome that employment does cause retail sales: alcoholic beverages. However, it also gave us a more convincing argument that retail sales of alcoholic beverages has a larger impact on unemployment. It is my belief that this finding suggest that retail sales as a whole, not just alcoholic beverages, have an impact on unemployment. This would be consistent with economic theory that would suggest that consumers stop purchasing as many goods when they become unemployed, due to lack of income. In order to confirm this we would need to gather new variables and more data to test this expectation.  
