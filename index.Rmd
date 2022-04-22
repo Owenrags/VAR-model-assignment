@@ -1,5 +1,5 @@
 ---
-title: 'Determining Causality between Unemployment and Retail Sales of Beer, Wine and Liquor'
+title: 'VAR/VECM Models: Determining Causality between Unemployment and Retail Sales of Beer, Wine and Liquor'
 author: "Owen Ragsdale"
 date: "`r format(Sys.Date(),'%B %d, %Y')`"
 output: 
