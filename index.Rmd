@@ -31,8 +31,8 @@ require(lmtest)
 ```
 
 ```{r data, include=FALSE}
-varList <- c("PBARLUSDM", "UNRATE")
-X <- tq_get(varList, get = "economic.data", from = "1990-01-01") %>%
+varList <- c("MRTSSM4453USS", "UNRATE")
+X <- tq_get(varList, get = "economic.data", from = "1992-01-01") %>%
   mutate(Month = yearmonth(date)) %>% dplyr::select(-date) %>%
   as_tsibble(index = Month, key = symbol)
 New_x <- X %>%
@@ -40,6 +40,20 @@ New_x <- X %>%
   as_tsibble()
 
 ```
+
+### _Executive Summary_
+
+This white paper seek insight into the causality and correlation between two variables, in this case the unemployment rate and retail sales: beer, wine, and liquor sales from 1992 until February of 2022. Prior to the analysis the expected outcome was that as unemployment increased, we would see an increase in retail sales of alcoholic beverages. After adjusting the data and using a Vector Autoregression Model (VAR) we found that their is no significant causality between the two variables. 
+
+### _Introduction_
+
+
+
+To see the entire project and code please click the link below.
+
+[link](https://owenrags.github.io/)
+
+### _Data selection & manipulation_
 
 ```{r plot}
 X %>% ggplot(aes(x = Month, y = price)) +
@@ -56,7 +70,7 @@ X %>%
 ```
 
 ```{r kpss}
-X %>% filter(symbol == "PBARLUSDM") %>%
+X %>% filter(symbol == "MRTSSM4453USS") %>%
   features(log(price), unitroot_kpss) %>%
   kable(format = "html", table.attr = "style='width:30%;' ") %>%
   kableExtra::kable_styling()
@@ -72,16 +86,16 @@ X %>% filter(symbol == "UNRATE") %>%
 
 ```{r }
 Zdrink <- New_x %>% 
- mutate(gPBARLUSDM = 100 * difference(log(PBARLUSDM))) %>%
-    dplyr::select(gPBARLUSDM, UNRATE) %>%
+ mutate(gMRTSSM4453USS = 100 * difference(difference(log(MRTSSM4453USS)))) %>%
+    dplyr::select(gMRTSSM4453USS, UNRATE) %>%
     tidyr::drop_na()
-Zdrink <- as.ts(Zdrink, start = c(1990,2), frequency = 12)
+Zdrink <- as.ts(Zdrink, start = c(1992,2), frequency = 12)
 
 ```
 
 ```{r}
 zh <- Zdrink[,c(2,1)]
-tmp <- VARselect(zh,lag.max = 12, type="const")
+tmp <- VARselect(zh,lag.max = 9, type="const")
 tmp
 ```
 
@@ -98,18 +112,24 @@ summary(var.Zdrink)
 
 ```{r}
 
-grangertest(gPBARLUSDM ~ UNRATE, order=p, data = zh)
+grangertest(gMRTSSM4453USS ~ UNRATE, order=p, data = zh)
 
 ```
 
 ```{r}
 
-grangertest(UNRATE ~ gPBARLUSDM, order=p, data = zh)
+grangertest(UNRATE ~ gMRTSSM4453USS, order=p, data = zh)
 
 ```
+
+### _Results of the VAR Model_
+
 
 ```{r}
 
 plot(irf(var.Zdrink, n.ahead = 6, boot = TRUE))
 
 ```
+
+
+### _Conclusion_
